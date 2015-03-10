@@ -22,11 +22,12 @@ class AggregateColumnBehavior extends Behavior
 
     // default parameters value
     protected $parameters = array(
-        'name'           => null,
-        'expression'     => null,
-        'condition'      => null,
-        'foreign_table'  => null,
-        'foreign_schema' => null,
+        'name'             => null,
+        'expression'       => null,
+        'condition'        => null,
+        'foreign_table'    => null,
+        'foreign_schema'   => null,
+        'foreign_key_name' => null,
     );
 
     /**
@@ -135,8 +136,16 @@ class AggregateColumnBehavior extends Behavior
         if (!$fks) {
             throw new InvalidArgumentException(sprintf('You must define a foreign key to the \'%s\' table in the \'%s\' table to enable the \'aggregate_column\' behavior', $this->getTable()->getName(), $foreignTable->getName()));
         }
+        $foreignKeyName = $this->getParameter('foreign_key_name');
+        if (null !== $foreignKeyName) {
+            foreach ($fks as $fk) {
+                if ($fk->getName() === $foreignKeyName) {
+                    return $fk;
+                }
+            }
+            throw new InvalidArgumentException(sprintf('The \'aggregate_column\' behavior foreign key name \'%s\' in the \'%s\' table was not found', $foreignKeyName, $this->getTable()->getName()));
+        }
 
-        // FIXME doesn't work when more than one fk to the same table
         return array_shift($fks);
     }
 
