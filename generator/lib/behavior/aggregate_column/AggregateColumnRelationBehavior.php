@@ -23,6 +23,7 @@ class AggregateColumnRelationBehavior extends Behavior
     // default parameters value
     protected $parameters = array(
         'foreign_table' => '',
+        'foreign_key_name' => null,
         'update_method' => '',
     );
 
@@ -156,7 +157,16 @@ class AggregateColumnRelationBehavior extends Behavior
         // let's infer the relation from the foreign table
         $fks = $this->getTable()->getForeignKeysReferencingTable($foreignTable->getName());
 
-        // FIXME doesn't work when more than one fk to the same table
+        $foreignKeyName = $this->getParameter('foreign_key_name');
+        if (null !== $foreignKeyName) {
+            foreach ($fks as $fk) {
+                if ($fk->getName() === $foreignKeyName) {
+                    return $fk;
+                }
+            }
+            throw new InvalidArgumentException(sprintf('The \'aggregate_column\' behavior foreign key name \'%s\' in the \'%s\' table was not found', $foreignKeyName, $foreignTable->getName()));
+        }
+
         return array_shift($fks);
     }
 

@@ -55,6 +55,7 @@ class AggregateColumnBehavior extends Behavior
             $relationBehavior->setName('aggregate_column_relation');
             $foreignKey = $this->getForeignKey();
             $relationBehavior->addParameter(array('name' => 'foreign_table', 'value' => $table->getName()));
+            $relationBehavior->addParameter(array('name' => 'foreign_key_name', 'value' => $this->getParameter('foreign_key_name')));
             $relationBehavior->addParameter(array('name' => 'update_method', 'value' => 'update' . $this->getColumn()->getPhpName()));
             $foreignTable->addBehavior($relationBehavior);
         }
